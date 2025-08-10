@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grand Royale Casino</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  /* Reset & basics */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: #121212;
+    font-family: 'Montserrat', sans-serif;
+    color: #eee;
+    display: flex;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    width: 280px;
+    background: #1c1c1c;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.8);
+  }
+  #sidebar h1 {
+    color: #FFD700;
+    font-weight: 900;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    user-select: none;
+  }
+  nav button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: #ccc;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      box-shadow 0.3s ease;
+    user-select: none;
+    margin-bottom: 10px;
+  }
+  nav button svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+    width: 24px;
+    height: 24px;
+  }
+  nav button:hover:not(.active),
+  nav button.active {
+    background-color: #FFD700;
+    color: #121212;
+    box-shadow: 0 0 8px #FFD700aa;
+  }
+  nav button:focus-visible {
+    outline: 2px solid #FFD700;
+  }
+
+  /* Main area */
+  #main {
+    flex: 1;
+    background: linear-gradient(135deg, #2b2b2b, #111111);
+    padding: 35px 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Jackpot */
+  #jackpot {
+    font-size: 32px;
+    font-weight: 900;
+    color: #FFD700;
+    margin-bottom: 35px;
+    font-family: 'Courier New', Courier, monospace;
+    user-select: none;
+    letter-spacing: 2px;
+  }
+
+  /* Game container */
+  .game {
+    background: #222;
+    border-radius: 16px;
+    padding: 28px 30px;
+    max-width: 640px;
+    width: 100%;
+    box-shadow: 0 0 20px #FFD700aa;
+    margin-bottom: 40px;
+  }
+  .game h2 {
+    margin-top: 0;
+    font-weight: 900;
+    font-size: 2rem;
+    color: #FFD700;
+    user-select: none;
+    margin-bottom: 20px;
+  }
+
+  /* Balance and deposit */
+  .balance-display {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+  .deposit-section {
+    margin-bottom: 24px;
+    display: flex;
+    gap: 12px;
+  }
+  input[type="number"] {
+    flex-shrink: 0;
+    padding: 12px 14px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: none;
+    width: 140px;
+    text-align: right;
+    font-weight: 600;
+    color: #222;
+  }
+  button.deposit-btn {
+    background: #FFD700;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #121212;
+    transition: background-color 0.3s ease;
+  }
+  button.deposit-btn:hover:not(:disabled) {
+    background: #e6c200;
+  }
+  button.deposit-btn:disabled {
+    cursor: not-allowed;
+    background: #999;
+  }
+
+  /* Buttons for game actions */
+  .game-action-btns {
+    display: flex;
+    gap: 15px;
+    margin-top: 18px;
+  }
+  .game-action-btns button {
+    flex: 1;
+    background: #444;
+    border: none;
+    color: #eee;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .game-action-btns button:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
+  .game-action-btns button:hover:not(:disabled) {
+    background: #FFD700;
+    color: #121212;
+  }
+
+  /* Cards and results */
+  #blackjack-table div {
+    margin: 8px 0;
+    font-weight: 700;
+    font-size: 1.15rem;
+    user-select: none;
+  }
+  #blackjack-result, #slots-result {
+    margin-top: 25px;
+    font-weight: 800;
+    font-size: 1.25rem;
+    min-height: 36px;
+    color: #FFD700;
+    user-select: none;
+  }
+
+  /* FAQ and other info */
+  .faq, .rules-content, .support-content {
+    background: #1a1a1a;
+    padding: 25px 28px;
+    border-radius: 16px;
+    max-width: 640px;
+    width: 100%;
+    box-shadow: 0 0 15px #FFD700aa;
+  }
+  .faq h3, .rules-content h3, .support-content h3 {
+    margin-top: 0;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: #FFD700;
+    user-select: none;
+  }
+  .faq p, .rules-content p, .support-content p {
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-size: 1rem;
+  }
+  .faq p:last-child, .rules-content p:last-child, .support-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Footer */
+  footer {
+    font-size: 0.8rem;
+    color: #555;
+    margin-top: auto;
+    padding: 15px 0;
+    user-select: none;
+  }
+
+  /* Scrollbar for main */
+  #main::-webkit-scrollbar {
+    width: 10px;
+  }
+  #main::-webkit-scrollbar-track {
+    background: #111;
+  }
+  #main::-webkit-scrollbar-thumb {
+    background: #FFD700aa;
+    border-radius: 10px;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="sidebar" role="navigation" aria-label="Main menu">
+  <h1>Grand Royale</h1>
+  <nav>
+    <button class="active" data-game="slots" aria-current="page" aria-label="Slots game">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="12" cy="14" r="3"/><line x1="12" y1="7" x2="12" y2="11"/></svg> Slots
+    </button>
+    <button data-game="blackjack" aria-label="Blackjack game">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><line x1="7" y1="7" x2="7" y2="21"/><line x1="17" y1="7" x2="17" y2="21"/></svg> Blackjack
+    </button>
+    <button data-game="crash" aria-label="Crash game">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><polyline points="3 17 9 11 13 15 21 7"/></svg> Crash
+    </button>
+    <button data-game="baccarat" aria-label="Baccarat game">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/></svg> Baccarat
+    </button>
+    <button data-game="rules" aria-label="Rules section">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Rules
+    </button>
+    <button data-game="support" aria-label="Support section">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5-2 4-2 4 2 4 2"/></svg> Support
+    </button>
+    <button data-game="faq" aria-label="FAQ section">
+      <svg fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" stroke="#ccc"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="16"/><path d="M10 10a2 2 0 1 1 4 0c0 2-3 2-3 4"/></svg> FAQ
+    </button>
+  </nav>
+</div>
+
+<div id="main" role="main" tabindex="-1">
+
+  <div id="jackpot" aria-live="polite" aria-atomic="true">Jackpot: €<span id="jackpot-amount">100,000</span></div>
+
+  <!-- Slots game -->
+  <section class="game" id="slots-game" tabindex="0">
+    <h2>Slots</h2>
+    <div class="balance-display" aria-label="Slots balance">Balance: €<span id="slots-balance">1000</span></div>
+    <div class="deposit-section">
+      <input type="number" id="slots-deposit-input" placeholder="Deposit €" min="1" aria-label="Deposit amount for Slots" />
+      <button class="deposit-btn" id="slots-deposit-btn" aria-label="Deposit to Slots balance">Deposit</button>
+    </div>
+    <button id="slots-spin-btn" class="deposit-btn" style="padding:14px 30px; font-weight:700; border:none; border-radius:8px; background:#FFD700; color:#121212; cursor:pointer;" aria-label="Spin Slots">Spin 🎰</button>
+    <p id="slots-result" aria-live="polite" style="margin-top:20px; font-weight:700;"></p>
+  </section>
+
+  <!-- Blackjack game -->
+  <section class="game" id="blackjack-game" style="display:none;" tabindex="0" aria-live="polite" aria-atomic="true">
+    <h2>Blackjack</h2>
+    <div class="balance-display" aria-label="Blackjack balance">Balance: €<span id="blackjack-balance">1000</span></div>
+    <div class="deposit-section">
+      <input type="number" id="blackjack-deposit-input" placeholder="Deposit €" min="1" aria-label="Deposit amount for Blackjack" />
+      <button class="deposit-btn" id="blackjack-deposit-btn" aria-label="Deposit to Blackjack balance">Deposit</button>
+    </div>
+
+    <div>
+      <label for="blackjack-bet" style="font-weight:700; user-select:none;">Bet (€): </label>
+      <input type="number" id="blackjack-bet" min="1" value="10" style="width:90px; font-weight:700; padding:6px 8px;" aria-label="Bet amount for Blackjack" />
+      <button id="blackjack-start-btn" class="deposit-btn" style="background:#009900; color:#fff; margin-left:10px;" aria-label="Start Blackjack round">Start Round</button>
+    </div>
+
+    <div id="blackjack-table" style="margin-top: 20px;">
+      <div><strong>Dealer:</strong> <span id="dealer-cards" aria-live="polite" aria-atomic="true"></span> — <span id="dealer-score"></span></div>
+      <div><strong>You:</strong> <span id="player-cards" aria-live="polite" aria-atomic="true"></span> — <span id="player-score"></span></div>
+    </div>
+
+    <div class="game-action-btns" style="margin-top: 15px;">
+      <button id="hit-btn" disabled aria-label="Hit (get another card)">Hit</button>
+      <button id="stand-btn" disabled aria-label="Stand (stop taking cards)">Stand</button>
+    </div>
+
+    <p id="blackjack-result" aria-live="polite" style="margin-top:20px; font-weight:700;"></p>
+  </section>
+
+  <!-- Crash game -->
+  <section class="game" id="crash-game" style="display:none;" tabindex="0">
+    <h2>Crash</h2>
+    <div class="balance-display" aria-label="Crash balance">Balance: €<span id="crash-balance">1000</span></div>
+    <div class="deposit-section">
+      <input type="number" id="crash-deposit-input" placeholder="Deposit €" min="1" aria-label="Deposit amount for Crash" />
+      <button class="deposit-btn" id="crash-deposit-btn" aria-label="Deposit to Crash balance">Deposit</button>
+    </div>
+    <button id="crash-start-btn" class="deposit-btn" style="background:#FF5722; color:#fff; width:100%; font-weight:700; margin-top:15px;" aria-label="Start Crash round">Start Crash</button>
+
+    <div style="margin-top:20px; font-size:1.3rem; font-weight:700; user-select:none;">
+      Multiplier: <span id="crash-multiplier">1.00x</span>
+    </div>
+    <button id="crash-cashout-btn" class="deposit-btn" style="background:#4CAF50; color:#fff; width:100%; font-weight:700; margin-top:15px;" aria-label="Cash out Crash round" disabled>Cash Out</button>
+    <p id="crash-result" aria-live="polite" style="margin-top: 20px; font-weight:700;"></p>
+  </section>
+
+  <!-- Baccarat game -->
+  <section class="game" id="baccarat-game" style="display:none;" tabindex="0">
+    <h2>Baccarat</h2>
+    <div class="balance-display" aria-label="Baccarat balance">Balance: €<span id="baccarat-balance">1000</span></div>
+    <div class="deposit-section">
+      <input type="number" id="baccarat-deposit-input" placeholder="Deposit €" min="1" aria-label="Deposit amount for Baccarat" />
+      <button class="deposit-btn" id="baccarat-deposit-btn" aria-label="Deposit to Baccarat balance">Deposit</button>
+    </div>
+
+    <div style="margin-top: 20px; user-select:none;">
+      <label><input type="radio" name="baccarat-bet" value="player" checked /> Player</label>
+      <label style="margin-left: 15px;"><input type="radio" name="baccarat-bet" value="banker" /> Banker</label>
+      <label style="margin-left: 15px;"><input type="radio" name="baccarat-bet" value="tie" /> Tie</label>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <label for="baccarat-bet-amount" style="font-weight:700;">Bet (€): </label>
+      <input type="number" id="baccarat-bet-amount" min="1" value="10" style="width:90px; font<!-- continuing from previous -->
+<input type="number" id="baccarat-bet-amount" min="1" value="10" style="width:90px; font-weight:700; padding:6px 8px;" aria-label="Bet amount for Baccarat" />
+<button id="baccarat-start-btn" class="deposit-btn" style="background:#007BFF; color:#fff; margin-left:10px; font-weight:700;" aria-label="Start Baccarat round">Start Round</button>
+
+<div id="baccarat-results" style="margin-top: 20px; font-weight: 700; user-select:none;" aria-live="polite"></div>
+</section>
+
+<!-- Rules -->
+<section class="game rules-content" id="rules" style="display:none;" tabindex="0" aria-live="polite">
+  <h2>Rules</h2>
+  <p>Welcome to Grand Royale Casino! Here are the basic rules for our games:</p>
+  <ul>
+    <li><strong>General:</strong> Always gamble responsibly. You start with a balance of €1000 per game.</li>
+    <li><strong>Deposits:</strong> You can deposit unlimited virtual Euros anytime.</li>
+    <li><strong>Blackjack:</strong> Try to beat the dealer by having a hand value closer to 21 without busting.</li>
+    <li><strong>Crash:</strong> Watch the multiplier grow and cash out before it crashes to win.</li>
+    <li><strong>Baccarat:</strong> Bet on Player, Banker, or Tie. The hand closest to 9 wins.</li>
+  </ul>
+</section>
+
+<!-- Support -->
+<section class="game support-content" id="support" style="display:none;" tabindex="0" aria-live="polite">
+  <h2>Support</h2>
+  <p>If you encounter any issues, please contact our support team at <a href="mailto:support@grandroyalecasino.fake" style="color:#FFD700;">support@grandroyalecasino.fake</a>.</p>
+  <p>We are available 24/7 to assist you with your experience.</p>
+</section>
+
+<!-- FAQ -->
+<section class="game faq" id="faq" style="display:none;" tabindex="0" aria-live="polite">
+  <h2>Frequently Asked Questions</h2>
+  <p><strong>Q:</strong> Is this a real casino?</p>
+  <p><em>A:</em> No real money is involved. This is a demo for entertainment only.</p>
+  <p><strong>Q:</strong> How do I deposit money?</p>
+  <p><em>A:</em> Just enter an amount in the deposit box and press Deposit.</p>
+  <p><strong>Q:</strong> Can I cheat?</p>
+  <p><em>A:</em> No cheats are allowed. The games are designed to be fair and fun.</p>
+</section>
+
+<footer>
+  <p>© 2025 Grand Royale Casino. All rights reserved. Licensed under Demo License.</p>
+</footer>
+
+<script>
+// ------------------
+// Sound Setup
+const sounds = {
+  click: new Audio('https://actions.google.com/sounds/v1/ui/click.ogg'),
+  deposit: new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'),
+  win: new Audio('https://actions.google.com/sounds/v1/cartoon/concussive_hit_guitar_boing.ogg'),
+  loss: new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'),
+  spin: new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'),
+  crashTick: new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'),
+};
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
+
+// ------------------
+// Jackpot counter animation
+const jackpotEl = document.getElementById('jackpot-amount');
+let jackpotValue = 100000;
+function animateJackpot() {
+  jackpotValue += Math.floor(Math.random() * 25);
+  jackpotEl.textContent = jackpotValue.toLocaleString('de-DE');
+}
+setInterval(animateJackpot, 1500);
+
+// ------------------
+// Menu interaction
+const buttons = document.querySelectorAll('#sidebar nav button');
+const sections = {
+  slots: document.getElementById('slots-game'),
+  blackjack: document.getElementById('blackjack-game'),
+  crash: document.getElementById('crash-game'),
+  baccarat: document.getElementById('baccarat-game'),
+  rules: document.getElementById('rules'),
+  support: document.getElementById('support'),
+  faq: document.getElementById('faq'),
+};
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => {
+      b.classList.remove('active');
+      b.removeAttribute('aria-current');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-current', 'page');
+    // Show the correct section
+    const game = btn.getAttribute('data-game');
+    Object.values(sections).forEach(sec => sec.style.display = 'none');
+    if (sections[game]) sections[game].style.display = 'block';
+    // Focus main content for accessibility
+    sections[game].focus();
+  });
+});
+
+// ------------------
+// Confirm on page load
+window.addEventListener('load', () => {
+  if(!confirm('Welcome to Grand Royale Casino! Are you 18 or older? Please gamble responsibly.')) {
+    alert('You must be 18 or older to play. Refresh to confirm.');
+    window.close();
+  }
+});
+
+// ------------------
+// Slots game (simple example)
+(() => {
+  let balance = 1000;
+  const balanceEl = document.getElementById('slots-balance');
+  const depositInput = document.getElementById('slots-deposit-input');
+  const depositBtn = document.getElementById('slots-deposit-btn');
+  const spinBtn = document.getElementById('slots-spin-btn');
+  const resultEl = document.getElementById('slots-result');
+
+  const symbols = ['🍒', '🍋', '🍊', '🍉', '⭐', '7️⃣'];
+  function randomSymbol() {
+    return symbols[Math.floor(Math.random()*symbols.length)];
+  }
+
+  function updateBalance() {
+    balanceEl.textContent = balance.toLocaleString('de-DE');
+  }
+
+  depositBtn.onclick = () => {
+    const val = parseInt(depositInput.value);
+    if(val > 0){
+      balance += val;
+      updateBalance();
+      playSound(sounds.deposit);
+      depositInput.value = '';
+    } else alert('Enter valid deposit');
+  };
+
+  spinBtn.onclick = () => {
+    if(balance < 10){
+      alert('Not enough balance to spin (min €10)');
+      return;
+    }
+    balance -= 10;
+    updateBalance();
+    playSound(sounds.spin);
+
+    // Spin reels (simple)
+    let reel1 = randomSymbol();
+    let reel2 = randomSymbol();
+    let reel3 = randomSymbol();
+
+    const display = `${reel1} | ${reel2} | ${reel3}`;
+    resultEl.textContent = display;
+
+    // Simple winning condition: all same symbols
+    if(reel1 === reel2 && reel2 === reel3){
+      balance += 200;
+      resultEl.textContent += ' — JACKPOT! You win €200!';
+      playSound(sounds.win);
+    }
+    updateBalance();
+  };
+
+  updateBalance();
+})();
+
+// ------------------
+// Blackjack game
+(() => {
+  let deck = [];
+  let playerHand = [];
+  let dealerHand = [];
+  let playerBalance = 1000;
+  let currentBet = 0;
+
+  const blackjackBalanceEl = document.getElementById('blackjack-balance');
+  const depositInput = document.getElementById('blackjack-deposit-input');
+  const depositBtn = document.getElementById('blackjack-deposit-btn');
+  const betInput = document.getElementById('blackjack-bet');
+  const startBtn = document.getElementById('blackjack-start-btn');
+  const hitBtn = document.getElementById('hit-btn');
+  const standBtn = document.getElementById('stand-btn');
+  const dealerCardsEl = document.getElementById('dealer-cards');
+  const playerCardsEl = document.getElementById('player-cards');
+  const dealerScoreEl = document.getElementById('dealer-score');
+  const playerScoreEl = document.getElementById('player-score');
+  const resultEl = document.getElementById('blackjack-result');
+
+  function updateBalance() {
+    blackjackBalanceEl.textContent = playerBalance.toLocaleString('de-DE');
+  }
+
+  function createDeck() {
+    const suits = ['♠', '♥', '♦', '♣'];
+    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    deck = [];
+    suits.forEach(suit => {
+      values.forEach(value => {
+        deck.push({ value, suit });
+      });
+    });
+  }
+
+  function shuffleDeck() {
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+  }
+
+  function calculateScore(hand) {
+    let score = 0;
+    let aces = 0;
+    hand.forEach(card => {
+      if (['J', 'Q', 'K'].includes(card.value)) score += 10;
+      else if (card.value === 'A') {
+        aces++;
+        score += 11;
+      } else score += parseInt(card.value);
+    });
+    while (score > 21 && aces > 0) {
+      score -= 10;
+      aces--;
+    }
+    return score;
+  }
+
+  function displayCards(cards) {
+    return cards.map(c => `${c.value}${c.suit}`).join(' ');
+  }
+
+  function resetRound() {
+    playerHand = [];
+    dealerHand = [];
+    dealerCardsEl.textContent = '';
+    playerCardsEl.textContent = '';
+    dealerScoreEl.textContent = '';
+    playerScoreEl.textContent = '';
+    resultEl.textContent = '';
+    hitBtn.disabled = true;
+    standBtn.disabled = true;
+    betInput.disabled = false;
+    startBtn.disabled = false;
+  }
+
+  function dealInitial() {
+    playerHand.push(deck.pop());
+    dealerHand.push(deck.pop());
+    playerHand.push(deck.pop());
+    dealerHand.push(deck.pop());
+    dealerCardsEl.textContent = `${dealerHand[0].value}${dealerHand[0].suit} ??`;
+    playerCardsEl.textContent = displayCards(playerHand);
+    playerScoreEl.textContent = calculateScore(playerHand);
+    dealerScoreEl.textContent = '?';
+  }
+
+  function dealerPlay() {
+    dealerCardsEl.textContent = displayCards(dealerHand);
+    dealerScoreEl.textContent = calculateScore(dealerHand);
+
+    while (calculateScore(dealerHand) < 17) {
+      dealerHand.push(deck.pop());
+      dealerCardsEl.textContent = displayCards(dealerHand);
+      dealerScoreEl.textContent = calculateScore(dealerHand);
+    }
+  }
+
+  function determineWinner() {
+    const playerScore = calculateScore(playerHand);
+    const dealerScore = calculateScore(dealerHand);
+    if (playerScore > 21) return 'Bust! You lose.';
+    if (dealerScore > 21) {
+      playerBalance += currentBet * 2;
+      return `Dealer busts! You win €${currentBet}`;
+    }
+    if (playerScore > dealerScore) {
+      playerBalance += currentBet * 2;
+      return `You win €${currentBet}`;
+    }
+    if (playerScore === dealerScore) {
+      playerBalance += currentBet;
+      return 'Push! Bet returned.';
+    }
+    return 'You lose.';
+  }
+
+  depositBtn.addEventListener('click', () => {
+    const depositAmount = parseInt(depositInput.value);
+    if (depositAmount > 0) {
+      playerBalance += depositAmount;
+      updateBalance();
+      playSound(sounds.deposit);
+      depositInput.value = '';
+    } else alert('Enter a valid deposit amount.');
+  });
+
+  startBtn.addEventListener('click', () => {
+    currentBet = parseInt(betInput.value);
+    if (!currentBet || currentBet <= 0) {
+      alert('Enter a valid bet.');
+      return;
+    }
+    if (currentBet > playerBalance) {
+      alert('Insufficient balance for this bet.');
+      return;
+    }
+    playerBalance -= currentBet;
+    updateBalance();
+    betInput.disabled = true;
+    startBtn.disabled = true;
+
+    createDeck();
+    shuffleDeck();
+    resetRound();
+    dealInitial();
+
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+    resultEl.textContent = '';
+    playSound(sounds.spin);
+  });
+
+  hitBtn.addEventListener('click', () => {
+    playerHand.push(deck.pop());
+    playerCardsEl.textContent = displayCards(playerHand);
+    playerScoreEl.textContent = calculateScore(playerHand);
+    playSound(sounds.click);
+
+    if (calculateScore(playerHand) > 21) {
+      dealerCardsEl.textContent = displayCards(dealerHand);
+      dealerScoreEl.textContent = calculateScore(dealerHand);
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      resultEl.textContent = determineWinner();
+      playSound(sounds.loss);
+      betInput.disabled = false;
+      startBtn.disabled = false;
+    }
+  });
+
+  standBtn.addEventListener('click', () => {
+    dealerPlay();
+    hitBtn.disabled = true;
+    standBtn.disabled = true;
+    const result = determineWinner();
+    resultEl.textContent = result;
+    if (result.includes('win')) playSound(sounds.win);
+    else if (result.includes('Bust') || result.includes('lose')) playSound(sounds.loss);
+    betInput.disabled = false;
+    startBtn.disabled = false;
+  });
+
+  updateBalance();
+})();
+
+// ------------------
+// Crash Game (simple multiplier)
+(() => {
+  let balance = 1000;
+  let multiplier = 1;
+  let running = false;
+  let intervalId = null;
+  const balanceEl = document.getElementById('crash-balance');
+  const depositInput = document.getElementById('crash-deposit-input');
+  const depositBtn = document.getElementById('crash-deposit-btn');
+  const startBtn = document.getElementById('crash-start-btn');
+  const cashoutBtn = document.getElementById('crash-cashout-btn');
+  const multiplierEl = document.getElementById('crash-multiplier');
+  const resultEl = document.getElementById('crash-result');
+
+  function updateBalance() {
+    balanceEl.textContent = balance.toLocaleString('de-DE');
+  }
+
+  depositBtn.onclick = () => {
+    const val = parseInt(depositInput.value);
+    if(val > 0){
+      balance += val;
+      updateBalance();
+      playSound(sounds.deposit);
+      depositInput.value = '';
+    } else alert('Enter valid deposit');
+  };
+
+  function endRound(win) {
+    running = false;
+    clearInterval(intervalId);
+    startBtn.disabled = false;
+    cashoutBtn.disabled = true;
+    if(win) {
+      balance += Math.floor(currentBet * multiplier);
+      resultEl.textContent = `You cashed out at ${multiplier.toFixed(2)}x and won €${Math.floor(currentBet * multiplier)}`;
+      playSound(sounds.win);
+    } else {
+      resultEl.textContent = `Crashed at ${multiplier.toFixed(2)}x. You lost €${currentBet}.`;
+      playSound(sounds.loss);
+    }
+    updateBalance();
+  }
+
+  let currentBet = 0;
+
+  startBtn.onclick = () => {
+    if(running) return;
+    currentBet = 10;
+    if(currentBet > balance){
+      alert('Not enough balance to start.');
+      return;
+    }
+    balance -= currentBet;
+    updateBalance();
+    multiplier = 1;
+    multiplierEl.textContent = multiplier.toFixed(2) + 'x';
+    resultEl.textContent = '';
+    running = true;
+    startBtn.disabled = true;
+    cashoutBtn.disabled = false;
+
+    intervalId = setInterval(() => {
+      multiplier += 0.01 + Math.random() * 0.02;
+      multiplierEl.textContent = multiplier.toFixed(2) + 'x';
+      playSound(sounds.crashTick);
+
+      // Random crash chance increases as multiplier grows
+      if(Math.random() < (multiplier - 1) / 50){
+        endRound(false);
+      }
+    }, 100);
+  };
+
+  cashoutBtn.onclick = () => {
+    if(!running) return;
+    endRound(true);
+  };
+
+  updateBalance();
+})();
+
+// ------------------
+// Baccarat Game (simple player/banker/tie)
+(() => {
+  let balance = 1000;
+  const balanceEl = document.getElementById('baccarat-balance');
+  const depositInput = document.getElementById('baccarat-deposit-input');
+  const depositBtn = document.getElementById('baccarat-deposit-btn');
+  const betAmountInput = document.getElementById('baccarat-bet-amount');
+  const startBtn = document.getElementById('baccarat-start-btn');
+  const resultsEl = document.getElementById('baccarat-results');
+  const betOptions = document.getElementsByName('baccarat-bet');
+
+  function updateBalance() {
+    balanceEl.textContent = balance.toLocaleString('de-DE');
+  }
+
+  depositBtn.onclick = () => {
+    const val = parseInt(depositInput.value);
+    if(val > 0){
+      balance += val;
+      updateBalance();
+      playSound(sounds.deposit);
+      depositInput.value = '';
+    } else alert('Enter valid deposit');
+  };
+
+  function drawCard() {
+    return Math.floor(Math.random()*10)+1; // 1-10 (simulate 10=10/J/Q/K)
+  }
+
+  function handValue(cards) {
+    let total = cards.reduce((a,b)=>a+b,0);
+    return total % 10;
+  }
+
+  startBtn.onclick = () => {
+    let betType;
+    for(const option of betOptions){
+      if(option.checked) {
+        betType = option.value;
+        break;
+      }
+    }
+    const betAmount = parseInt(betAmountInput.value);
+    if(!betAmount || betAmount <= 0) {
+      alert('Enter a valid bet amount.');
+      return;
+    }
+    if(betAmount > balance) {
+      alert('Insufficient balance.');
+      return;
+    }
+    balance -= betAmount;
+    updateBalance();// Draw hands
+    const playerCards = [drawCard(), drawCard()];
+    const bankerCards = [drawCard(), drawCard()];
+    const playerScore = handValue(playerCards);
+    const bankerScore = handValue(bankerCards);
+
+    let outcome = '';
+    if(playerScore > bankerScore) outcome = 'player';
+    else if(bankerScore > playerScore) outcome = 'banker';
+    else outcome = 'tie';
+
+    // Determine winnings
+    let winnings = 0;
+    if(betType === outcome) {
+      if(outcome === 'tie') winnings = betAmount * 8;
+      else if(outcome === 'banker') winnings = betAmount * 1.95; // Banker commission
+      else winnings = betAmount * 2;
+      balance += winnings;
+      resultsEl.textContent = `You won €${winnings.toFixed(2)}! Player: ${playerScore}, Banker: ${bankerScore}`;
+      playSound(sounds.win);
+    } else {
+      resultsEl.textContent = `You lost €${betAmount}. Player: ${playerScore}, Banker: ${bankerScore}`;
+      playSound(sounds.loss);
+    }
+    updateBalance();
+  };
+
+  updateBalance();
+})();
+
+</script>
+
+</body>
+</html>
